@@ -20,7 +20,7 @@
 //	|    :W@@WWWW@@8       +              :&W@@@@&    &W  .o#@@W&.   :W@WWW@@&   |
 //	|      +o&&&&+.                                                    +oooo.    |
 //	+----------------------------------------------------------------------------+
-package main
+package cmd_amass
 
 import (
 	"bytes"
@@ -77,7 +77,7 @@ func commandUsage(msg string, cmdFlagSet *flag.FlagSet, errBuf *bytes.Buffer) {
 	g.Fprintf(color.Error, "The Amass tutorial can be found here: \n%s\n\n", tutorialURL)
 }
 
-func main() {
+func amassCMD() {
 	var version, help1, help2 bool
 	mainFlagSet := flag.NewFlagSet("amass", flag.ContinueOnError)
 

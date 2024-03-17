@@ -2,7 +2,7 @@
 // Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
 // SPDX-License-Identifier: Apache-2.0
 
-package main
+package cmd_amass
 
 import (
 	"bufio"
@@ -143,6 +143,44 @@ func defineEnumFilepathFlags(enumFlags *flag.FlagSet, args *enumArgs) {
 	enumFlags.Var(&args.Filepaths.Trusted, "trf", "Path to a file providing trusted DNS resolvers")
 	enumFlags.StringVar(&args.Filepaths.ScriptsDirectory, "scripts", "", "Path to a directory containing ADS scripts")
 	enumFlags.StringVar(&args.Filepaths.TermOut, "o", "", "Path to the text file containing terminal stdout/stderr")
+}
+
+func removeDuplicate[T comparable](sliceList []T) []T {
+	allKeys := make(map[T]bool)
+	list := []T{}
+	for _, item := range sliceList {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
+}
+
+// amass enum -brute -passive -active -o amass.log -d zoom.com
+func EnumAllDomain(domain string, output string) []string {
+	runEnumCommand([]string{"-silent", "-brute",
+		"-nocolor", "-o", output, "-d", domain})
+	file_data, err := os.ReadFile(output)
+	if err != nil {
+		fmt.Println(err)
+	}
+	sfile_data := string(file_data)
+	fqdns := parseFQDN(sfile_data)
+
+	return removeDuplicate(fqdns)
+
+}
+
+func parseFQDN(output string) []string {
+	words := strings.Fields(output)
+	var fqdns []string
+	for i := 0; i < len(words); i++ {
+		if words[i] == "(FQDN)" {
+			fqdns = append(fqdns, words[i-1])
+		}
+	}
+	return fqdns
 }
 
 func runEnumCommand(clArgs []string) {

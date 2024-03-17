@@ -12,6 +12,7 @@ require (
 	github.com/cjoudrey/gluaurl v0.0.0-20161028222611-31cbb9bef199
 	github.com/fatih/color v1.15.0
 	github.com/geziyor/geziyor v0.0.0-20230315135110-a242b58aaa65
+	github.com/joho/godotenv v1.5.1
 	github.com/miekg/dns v1.1.55
 	github.com/owasp-amass/asset-db v0.3.3
 	github.com/owasp-amass/config v0.1.4
