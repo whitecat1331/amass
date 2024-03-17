@@ -1,4 +1,4 @@
-module github.com/whitecat1331/amass/cmd/cmd_amass
+module github.com/whitecat1331/amass/v4
 
 go 1.19
 
