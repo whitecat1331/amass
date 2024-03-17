@@ -4,8 +4,6 @@
 *.so
 *.dylib
 *.env
-amass
-*test*
 
 # Test binary, build with `go test -c`
 *.test
