@@ -157,22 +157,32 @@ func removeDuplicate[T comparable](sliceList []T) []T {
 	return list
 }
 
-// amass enum -brute -passive -active -o amass.log -d zoom.com
-func EnumAllDomain(domain string, output string) []string {
-	runEnumCommand([]string{"-silent", "-brute",
-		"-nocolor", "-o", output, "-d", domain})
-	file_data, err := os.ReadFile(output)
-	if err != nil {
-		fmt.Println(err)
+// // amass enum -brute -passive -active -o amass.log -d zoom.com
+// func EnumAllDomain(domain string, output string) []string {
+// 	runEnumCommand([]string{"-silent", "-brute",
+// 		"-nocolor", "-o", output, "-d", domain})
+// 	file_data, err := os.ReadFile(output)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	sfile_data := string(file_data)
+// 	fqdns := parseFQDN(sfile_data)
+//
+// 	return removeDuplicate(fqdns)
+//
+// }
+
+func RunEnumCommand(domains []string, args ...string) <-chan string {
+	enumeratedDomains := make(chan string, 10)
+	for _, domain := range domains {
+		formattedArgs := append(args, "-d", domain)
+		go runEnumCommand(formattedArgs, enumeratedDomains)
 	}
-	sfile_data := string(file_data)
-	fqdns := parseFQDN(sfile_data)
 
-	return removeDuplicate(fqdns)
-
+	return enumeratedDomains
 }
 
-func parseFQDN(output string) []string {
+func ParseFQDN(output string) []string {
 	words := strings.Fields(output)
 	var fqdns []string
 	for i := 0; i < len(words); i++ {
@@ -183,7 +193,7 @@ func parseFQDN(output string) []string {
 	return fqdns
 }
 
-func runEnumCommand(clArgs []string) {
+func runEnumCommand(clArgs []string, enumeratedDomains chan string) {
 	// Extract the correct config from the user provided arguments and/or configuration file
 	cfg, args := argsAndConfig(clArgs)
 	if cfg == nil {
@@ -223,6 +233,7 @@ func runEnumCommand(clArgs []string) {
 
 	var wg sync.WaitGroup
 	var outChans []chan string
+	outChans = append(outChans, enumeratedDomains)
 	// This channel sends the signal for goroutines to terminate
 	done := make(chan struct{})
 	// Print output only if JSONOutput is not meant for STDOUT
@@ -368,6 +379,7 @@ func argsAndConfig(clArgs []string) (*config.Config, *enumArgs) {
 	// Check if the user has requested the data source names
 	if args.Options.ListSources {
 		for _, line := range GetAllSourceInfo(cfg) {
+
 			fmt.Fprintln(color.Output, line)
 		}
 		return nil, &args

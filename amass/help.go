@@ -20,7 +20,7 @@ func runHelpCommand(clArgs []string) {
 	}
 	switch clArgs[0] {
 	case "enum":
-		runEnumCommand(help)
+		RunEnumCommand(help)
 	case "intel":
 		runIntelCommand(help)
 	default:

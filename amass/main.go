@@ -107,7 +107,7 @@ func amassCMD() {
 
 	switch os.Args[1] {
 	case "enum":
-		runEnumCommand(os.Args[2:])
+		RunEnumCommand(os.Args[2:])
 	case "intel":
 		runIntelCommand(os.Args[2:])
 	case "help":
