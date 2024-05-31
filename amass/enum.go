@@ -158,19 +158,18 @@ func removeDuplicate[T comparable](sliceList []T) []T {
 }
 
 // amass enum -brute -passive -active -o amass.log -d zoom.com
-func EnumAllDomain(domain string, output string) []string {
-	runEnumCommand([]string{"-silent", "-brute",
-		"-nocolor", "-o", output, "-d", domain})
-	file_data, err := os.ReadFile(output)
-	if err != nil {
-		fmt.Println(err)
-	}
-	sfile_data := string(file_data)
-	fqdns := parseFQDN(sfile_data)
-
-	return removeDuplicate(fqdns)
-
-}
+// func EnumAllDomain(domain string, output string) []string {
+// 	runEnumCommand([]string{"-silent", "-nocolor", "-o", output, "-d", domain})
+// 	file_data, err := os.ReadFile(output)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	sfile_data := string(file_data)
+// 	fqdns := parseFQDN(sfile_data)
+//
+// 	return removeDuplicate(fqdns)
+//
+// }
 
 func parseFQDN(output string) []string {
 	words := strings.Fields(output)
@@ -183,7 +182,21 @@ func parseFQDN(output string) []string {
 	return fqdns
 }
 
-func runEnumCommand(clArgs []string) {
+func RunEnumCommand(cliArgs []string) []string {
+
+	var enumeratedDomains []string
+	enumChan := make(chan string)
+	go runEnumCommand(enumChan, cliArgs)
+
+	for rawDomain := range enumChan {
+		parsedDomains := parseFQDN(rawDomain)
+		enumeratedDomains = append(enumeratedDomains, parsedDomains...)
+	}
+
+	return removeDuplicate(enumeratedDomains)
+}
+
+func runEnumCommand(enumChan chan string, clArgs []string) {
 	// Extract the correct config from the user provided arguments and/or configuration file
 	cfg, args := argsAndConfig(clArgs)
 	if cfg == nil {
@@ -223,6 +236,7 @@ func runEnumCommand(clArgs []string) {
 
 	var wg sync.WaitGroup
 	var outChans []chan string
+	outChans = append(outChans, enumChan)
 	// This channel sends the signal for goroutines to terminate
 	done := make(chan struct{})
 	// Print output only if JSONOutput is not meant for STDOUT
