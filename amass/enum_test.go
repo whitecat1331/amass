@@ -25,16 +25,18 @@ func NewTestingValues() testValues {
 
 var tv = NewTestingValues()
 
-// []string{"-silent", "-brute",
-// "-nocolor", "-o", output, "-d", domain}
-func TestAmassEnum(t *testing.T) {
-	// args := []string{"-silent", "-brute", "-nocolor"}
-	args := []string{"-brute", "-silent", "-nocolor", "-v",
-		"-o", "amass_enum.log"}
-	t.Log(args)
-	t.Logf("Domains: %#v", tv.Domains)
-	out := RunEnumCommand(tv.Domains, args...)
-	for i := range out {
-		t.Log(ParseFQDN(i))
+// var cliArgs = []string{"-silent, "-nocolor", "-d", tv.Domain}
+var cliArgs = []string{"-nocolor", "-d", os.Getenv("DOMAINS")}
+
+func TestRunEnumCommandPrivate(t *testing.T) {
+	enumChan := make(chan string)
+	go runEnumCommand(enumChan, cliArgs)
+	for domain := range enumChan {
+		t.Log(domain)
 	}
+}
+
+func TestRunEnumCommandPublic(t *testing.T) {
+	result := RunEnumCommand(cliArgs)
+	t.Log(result)
 }
