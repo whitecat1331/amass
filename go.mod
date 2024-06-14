@@ -1,6 +1,6 @@
 module github.com/owasp-amass/amass/v4
 
-go 1.19
+go 1.22.1
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
@@ -20,6 +20,7 @@ require (
 	github.com/owasp-amass/resolve v0.6.21
 	github.com/stretchr/testify v1.8.2
 	github.com/tylertreat/BoomFilters v0.0.0-20210315201527-1a82519a3e43
+	github.com/whitecat1331/godevsuite v0.0.0-20240613202548-419702b6ac61
 	github.com/yl2chen/cidranger v1.0.2
 	github.com/yuin/gopher-lua v1.1.0
 	golang.org/x/net v0.15.0
