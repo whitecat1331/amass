@@ -26,7 +26,7 @@ func NewTestingValues() testValues {
 var tv = NewTestingValues()
 
 // var cliArgs = []string{"-silent, "-nocolor", "-d", tv.Domain}
-var cliArgs = []string{"-nocolor", "-d", os.Getenv("DOMAINS")}
+var cliArgs = []string{"-silent", "-nocolor", "-timeout", "1", "-dir", "logs/enum.log", "-d", os.Getenv("DOMAINS")}
 
 func TestRunEnumCommandPrivate(t *testing.T) {
 	enumChan := make(chan string)
