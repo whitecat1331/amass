@@ -31,6 +31,8 @@ import (
 	"github.com/owasp-amass/amass/v4/resources"
 	"github.com/owasp-amass/amass/v4/systems"
 	"github.com/owasp-amass/config/config"
+
+	"github.com/whitecat1331/godevsuite"
 )
 
 const enumUsageMsg = "enum [options] -d DOMAIN"
@@ -145,18 +147,6 @@ func defineEnumFilepathFlags(enumFlags *flag.FlagSet, args *enumArgs) {
 	enumFlags.StringVar(&args.Filepaths.TermOut, "o", "", "Path to the text file containing terminal stdout/stderr")
 }
 
-func removeDuplicate[T comparable](sliceList []T) []T {
-	allKeys := make(map[T]bool)
-	list := []T{}
-	for _, item := range sliceList {
-		if _, value := allKeys[item]; !value {
-			allKeys[item] = true
-			list = append(list, item)
-		}
-	}
-	return list
-}
-
 // amass enum -brute -passive -active -o amass.log -d zoom.com
 // func EnumAllDomain(domain string, output string) []string {
 // 	runEnumCommand([]string{"-silent", "-nocolor", "-o", output, "-d", domain})
@@ -193,7 +183,7 @@ func RunEnumCommand(cliArgs []string) []string {
 		enumeratedDomains = append(enumeratedDomains, parsedDomains...)
 	}
 
-	return removeDuplicate(enumeratedDomains)
+	return godevsuite.RemoveDuplicates(enumeratedDomains)
 }
 
 func runEnumCommand(enumChan chan string, clArgs []string) {
@@ -488,6 +478,8 @@ func processOutput(ctx context.Context, g *netmap.Graph, e *enum.Enumeration, ou
 	}
 }
 
+// Change this to add a function that will setup the logger
+// use godevsuite and change the setup logger function to work with any type of logger
 func writeLogsAndMessages(logs *io.PipeReader, logfile string, verbose bool) {
 	wildcard := regexp.MustCompile("DNS wildcard")
 	queries := regexp.MustCompile("Querying")
